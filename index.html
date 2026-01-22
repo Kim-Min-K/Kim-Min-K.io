@@ -13,6 +13,11 @@
     />
   </head>
   <body>
+    <div class="noise-overlay"></div>
+    <div id="loading-screen">
+      <div class="loader"></div>
+      <div class="loading-text">Initializing...</div>
+    </div>
     <div
       id="canvas-container"
       style="
@@ -26,7 +31,7 @@
     ></div>
     <nav class="navbar">
       <div class="nav-container">
-        <a href="#hero" class="logo">Welcome</a>
+        <a href="#hero" class="logo">MK.</a>
 
         <div class="menu-toggle" id="mobile-menu">
           <span class="bar"></span>
@@ -51,10 +56,10 @@
       >
         <div class="hero-content">
           <p class="subtitle">Hello, I'm</p>
-          <h1 class="title">Min Kim</h1>
+          <h1 class="title text-gradient">Min Kim</h1>
           <h2 class="role">
             Computer Science Student &<br />
-            Aspring Data Analyst
+            <span class="typing-text"></span>
           </h2>
           <p class="description">
             Focusing on creating business insights and solving complex problems.
@@ -65,7 +70,7 @@
 
       <section id="about" class="section-container">
         <h2 class="section-title">About Me</h2>
-        <div class="about-content">
+        <div class="about-content hidden">
           <div class="about-text">
             <p>
               I am a Computer Science student graduating in April 2026,
@@ -87,8 +92,8 @@
 
       <section id="projects" class="section-container">
         <h2 class="section-title">Featured Projects</h2>
-        <div class="project-grid">
-          <article class="project-card">
+        <div class="project-grid hidden">
+          <article class="project-card hidden">
             <div class="card-header">
               <div class="folder-icon">
                 <svg
@@ -121,7 +126,7 @@
             </ul>
           </article>
 
-          <article class="project-card">
+          <article class="project-card hidden">
             <div class="card-header">
               <div class="folder-icon">
                 <svg
@@ -154,7 +159,7 @@
             </ul>
           </article>
 
-          <article class="project-card">
+          <article class="project-card hidden">
             <div class="card-header">
               <div class="folder-icon">
                 <svg
@@ -190,7 +195,7 @@
       </section>
 
       <section id="resume" class="section-container text-center">
-        <h2 class="section-title">Connect With Me!</h2>
+        <h2 class="section-title hidden">Connect With Me!</h2>
         <p class="large-text">Email me here:</p>
         <a href="mailto:your.email@example.com" class="cta-button outline"
           >Say Hello!</a

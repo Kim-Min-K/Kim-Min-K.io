@@ -1,6 +1,6 @@
 /* --- Variables & Reset --- */
 :root {
-  --bg-color: #0f172a; /* Slate 900 */
+  --bg-color: #0b0f19; /* Deeper, richer dark blue */
   --card-bg: #1e293b; /* Slate 800 */
   --text-primary: #e2e8f0; /* Slate 200 */
   --text-secondary: #94a3b8; /* Slate 400 */
@@ -24,6 +24,19 @@ body {
   color: var(--text-primary);
   font-family: "Inter", sans-serif;
   line-height: 1.6;
+}
+
+/* --- Noise Overlay --- */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 900;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
 /* --- Typography --- */
@@ -77,13 +90,20 @@ h3 {
 /* --- Navbar --- */
 .navbar {
   height: var(--nav-height);
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(10px);
+  background: transparent;
+  transition: var(--transition);
   position: fixed;
   width: 100%;
   top: 0;
   z-index: 1000;
+  border-bottom: 1px solid transparent;
+}
+
+.navbar.scrolled {
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 30px -10px rgba(2, 12, 27, 0.7);
 }
 
 .nav-container {
@@ -136,6 +156,18 @@ h3 {
   font-size: clamp(40px, 8vw, 80px);
   line-height: 1.1;
   color: #f8fafc;
+  position: relative;
+  /* Subtle glow behind text */
+  text-shadow: 0 0 40px rgba(56, 189, 248, 0.3);
+  z-index: 1;
+}
+
+.text-gradient {
+  background: linear-gradient(to right, #38bdf8, #818cf8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
 }
 
 .role {
@@ -143,6 +175,22 @@ h3 {
   line-height: 1.1;
   color: var(--text-secondary);
   margin-bottom: 20px;
+}
+
+.typing-text::after {
+  content: "|";
+  animation: blink 1s step-end infinite;
+  color: var(--accent);
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 .description {
@@ -193,7 +241,9 @@ h3 {
 }
 
 .project-card {
-  background-color: var(--card-bg);
+  background: rgba(30, 41, 59, 0.7); /* Glassmorphism base */
+  backdrop-filter: blur(10px); /* Blur effect */
+  border: 1px solid rgba(255, 255, 255, 0.05);
   padding: 2rem;
   border-radius: 6px;
   transition: var(--transition);
@@ -242,6 +292,96 @@ h3 {
   font-family: monospace;
   font-size: 0.8rem;
   color: var(--text-secondary);
+}
+
+/* --- Animations --- */
+.hidden {
+  opacity: 0;
+  filter: blur(5px);
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+}
+
+.show {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0);
+}
+
+.project-card:nth-child(2) {
+  transition-delay: 0.1s;
+}
+.project-card:nth-child(3) {
+  transition-delay: 0.2s;
+}
+
+/* --- Loading Screen --- */
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-color);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  transition:
+    opacity 0.5s ease-out,
+    visibility 0.5s;
+}
+
+#loading-screen.fade-out {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader {
+  position: relative;
+  width: 60px;
+  height: 60px;
+}
+
+.loader::before,
+.loader::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  border: 3px solid transparent;
+}
+
+.loader::before {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-top-color: var(--accent);
+  animation: spin 1.5s linear infinite;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+}
+
+.loader::after {
+  top: 5px;
+  left: 5px;
+  right: 5px;
+  bottom: 5px;
+  border-bottom-color: #818cf8;
+  animation: spin 2s linear infinite reverse;
+}
+
+.loading-text {
+  margin-top: 20px;
+  font-family: monospace;
+  color: var(--accent);
+  font-size: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* --- Footer --- */
