@@ -7,6 +7,7 @@
   --accent: #000000;
   --border-color: #e5e5e5;
   --nav-height: 80px;
+  --marquee-height: 32px;
   --transition: all 0.3s ease;
 }
 
@@ -33,6 +34,7 @@ html {
 body {
   background-color: var(--bg-color);
   color: var(--text-primary);
+  padding-top: var(--marquee-height); /* Push content down for marquee */
   font-family: "Inter", sans-serif;
   line-height: 1.6;
 }
@@ -84,7 +86,7 @@ h3 {
   transition: var(--transition);
   position: fixed;
   width: 100%;
-  top: 0;
+  top: var(--marquee-height); /* Sit below the marquee */
   z-index: 1000;
   border-bottom: 1px solid var(--border-color);
   background: var(--bg-color);
@@ -313,6 +315,56 @@ h3 {
   transition-delay: 0.2s;
 }
 
+/* --- Stock Marquee --- */
+.stock-marquee {
+  width: 100%;
+  height: var(--marquee-height);
+  background: var(--accent);
+  color: var(--bg-color);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1001;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  font-family: "Inter", sans-serif;
+  font-size: 0.8rem;
+}
+
+.marquee-content {
+  display: flex;
+  gap: 2rem;
+  animation: scroll 80s linear infinite;
+  white-space: nowrap;
+  width: max-content; /* Ensure container fits all items */
+  padding-right: 2rem; /* Adds a gap at the end to match the loop */
+  will-change: transform; /* Hardware acceleration for smoothness */
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ticker-item strong {
+  font-weight: 700;
+}
+
+.ticker-item svg {
+  width: 14px;
+  height: 14px;
+}
+
+.ticker-item.up svg { stroke: #4ade80; } /* Green */
+.ticker-item.down svg { stroke: #f87171; } /* Red */
+
 /* --- Footer --- */
 footer {
   padding: 2rem;
@@ -331,7 +383,7 @@ footer {
   .nav-menu {
     position: fixed;
     left: -100%;
-    top: var(--nav-height);
+    top: calc(var(--nav-height) + var(--marquee-height));
     flex-direction: column;
     background-color: var(--bg-color);
     width: 100%;

@@ -1,0 +1,6 @@
+# System files
+.DS_Store
+
+# Secrets and Config
+.env
+config.js
