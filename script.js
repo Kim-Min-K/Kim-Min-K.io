@@ -111,20 +111,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (themeToggle) {
     themeToggle.addEventListener("click", () => {
-      const currentTheme = htmlElement.getAttribute("data-theme");
+      const currentTheme = htmlElement.getAttribute("data-theme") || "light";
       const newTheme = currentTheme === "light" ? "dark" : "light";
 
       htmlElement.setAttribute("data-theme", newTheme);
 
       // Update Icon
       if (newTheme === "light") {
-        // Moon Icon
+        // Light Mode -> Show Lamp Off (Click to turn off/go dark)
         themeIcon.innerHTML =
-          '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+          '<path d="M9 21h6"></path><path d="M12 3a7 7 0 0 0-7 7c0 5 3 7 3 11h8c0-4 3-6 3-11a7 7 0 0 0-7-7z"></path>';
       } else {
-        // Sun Icon
+        // Dark Mode -> Show Lamp On (Click to turn on/go light)
         themeIcon.innerHTML =
-          '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+          '<path d="M9 21h6"></path><path d="M12 3a7 7 0 0 0-7 7c0 5 3 7 3 11h8c0-4 3-6 3-11a7 7 0 0 0-7-7z"></path><line x1="12" y1="1" x2="12" y2="3"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
       }
     });
   }
@@ -195,4 +195,96 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   fetchStockData();
+
+  // 10. Three.js 3D Data Core Background
+  const initThreeJS = () => {
+    const container = document.getElementById("three-bg");
+    if (!container) return;
+
+    // Scene Setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    container.appendChild(renderer.domElement);
+
+    // Create "Data Particles" (Inner Sphere)
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particlesCount = 700;
+    const posArray = new Float32Array(particlesCount * 3);
+
+    for(let i = 0; i < particlesCount * 3; i++) {
+      posArray[i] = (Math.random() - 0.5) * 15; // Spread particles
+    }
+
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+    // Check initial theme
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    const initialColor = isDark ? 0xffffff : 0x000000;
+
+    const particlesMaterial = new THREE.PointsMaterial({
+      size: 0.05,
+      color: initialColor,
+      transparent: true,
+      opacity: 0.8,
+    });
+
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
+
+    // Create "Network Lines" (Outer Wireframe)
+    const geometryWire = new THREE.IcosahedronGeometry(6, 1);
+    const materialWire = new THREE.MeshBasicMaterial({ 
+      color: initialColor, 
+      wireframe: true, 
+      transparent: true, 
+      opacity: 0.1 
+    });
+    const wireMesh = new THREE.Mesh(geometryWire, materialWire);
+    scene.add(wireMesh);
+
+    camera.position.z = 10;
+
+    // Animation Loop
+    const animate = () => {
+      requestAnimationFrame(animate);
+      particlesMesh.rotation.y += 0.001;
+      particlesMesh.rotation.x -= 0.0005;
+      wireMesh.rotation.y -= 0.001; // Counter rotate
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    // Handle Resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Handle Theme Change (Observer)
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === "data-theme") {
+          const isDarkNow = document.documentElement.getAttribute("data-theme") === "dark";
+          const newColor = isDarkNow ? 0xffffff : 0x000000;
+          particlesMaterial.color.setHex(newColor);
+          materialWire.color.setHex(newColor);
+        }
+      });
+    });
+    observer.observe(document.documentElement, { attributes: true });
+
+    // Mouse Interaction (Parallax)
+    document.addEventListener('mousemove', (event) => {
+      const mouseX = event.clientX / window.innerWidth - 0.5;
+      const mouseY = event.clientY / window.innerHeight - 0.5;
+      particlesMesh.rotation.y += mouseX * 0.05;
+      particlesMesh.rotation.x += mouseY * 0.05;
+    });
+  };
+  initThreeJS();
 });
